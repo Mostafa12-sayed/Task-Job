@@ -13,7 +13,8 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        return Task::all();
+        $tasks = Task::where('user_id', Auth::id())->get();
+        return response()->json($tasks);
     }
 
 
@@ -27,6 +28,7 @@ class TaskController extends Controller
     {
         $task = Task::create([
             'title' => $request->title,
+            'status' => $request->status ?? 'pending',
             'user_id' => Auth::id(),
         ]);
         return Response()->json([
@@ -36,12 +38,10 @@ class TaskController extends Controller
     }
     public function show(Task $task)
     {
-        if(Auth::id() != $task->user_id){
-            return Response()->json([
-                "message" => "You are not authorized to view this task",
-            ])->setStatusCode(403);
-        }
-        return $task;
+    
+        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        return response()->json($task);
+      
     }
 
     /**
