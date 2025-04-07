@@ -57,6 +57,12 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
+       
+        if(Auth::id() != $task->user_id){
+            return Response()->json([
+                "message" => "You are not authorized to update this task",
+            ])->setStatusCode(403);
+        }
         $task->update($request->all());
         return Response()->json([
             "message" => "Task updated successfully",
