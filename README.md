@@ -25,8 +25,8 @@ This Task Manager API provides endpoints to manage tasks with different statuses
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/laravel-task-manager.git
-   cd laravel-task-manager
+   git clone https://github.com/Mostafa12-sayed/Task-Job
+   cd Task-Job
    ```
 
 2. Install dependencies:
