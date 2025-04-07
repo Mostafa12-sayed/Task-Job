@@ -1,66 +1,463 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Task Manager API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A simple RESTful API built with Laravel to manage tasks. This API allows users to create, read, update, and delete tasks, with authentication handled by Laravel Sanctum.
 
-## About Laravel
+## Project Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This Task Manager API provides endpoints to manage tasks with different statuses (pending, in-progress, completed) and associates them with authenticated users.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- RESTful API architecture
+- Task management (CRUD operations)
+- User authentication with Laravel Sanctum
+- Input validation
+- Resource pagination
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP >= 8.0
+- Composer
+- MySQL/PostgreSQL
+- Laravel 9.x/10.x
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/laravel-task-manager.git
+   cd laravel-task-manager
+   ```
 
-## Laravel Sponsors
+2. Install dependencies:
+   ```bash
+   composer install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+3. Copy the environment file:
+   ```bash
+   cp .env.example .env
+   ```
 
-### Premium Partners
+4. Configure your database in the `.env` file:
+   ```
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=task_manager
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+5. Generate an application key:
+   ```bash
+   php artisan key:generate
+   ```
 
-## Contributing
+6. Run migrations:
+   ```bash
+   php artisan migrate
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+7. Start the development server:
+   ```bash
+   php artisan serve
+   ```
 
-## Code of Conduct
+## Database Structure
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Tasks Table
 
-## Security Vulnerabilities
+The application has a `tasks` table with the following structure:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BigInteger | Primary key, auto-increments |
+| title | String | Task title (required) |
+| status | Enum | Task status: 'pending', 'in-progress', 'completed' |
+| user_id | BigInteger | Foreign key to users table |
+| created_at | Timestamp | When the task was created |
+| updated_at | Timestamp | When the task was last updated |
+
+## API Endpoints
+
+All API routes are prefixed with `/api`.
+
+### Authentication Endpoints
+
+| Method | URI | Description |
+|--------|-----|-------------|
+| POST | `/register` | Register a new user |
+| POST | `/login` | Log in a user and get a token |
+| POST | `/logout` | Log out a user (revoke token) |
+
+### Task Endpoints
+
+All task endpoints require authentication.
+
+| Method | URI | Action | Description |
+|--------|-----|--------|-------------|
+| GET | `/tasks` | index | Get all tasks for the authenticated user |
+| POST | `/tasks` | store | Create a new task |
+| GET | `/tasks/{id}` | show | Get a specific task |
+| PUT | `/tasks/{id}` | update | Update a specific task |
+| DELETE | `/tasks/{id}` | destroy | Delete a specific task |
+
+## Implementation Details
+
+### Models
+
+#### Task Model (`app/Models/Task.php`)
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Task extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'status',
+        'user_id',
+    ];
+
+    protected $casts = [
+        'status' => 'string',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+```
+
+### Migrations
+
+#### Create Tasks Table (`database/migrations/xxxx_xx_xx_create_tasks_table.php`)
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('tasks', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->enum('status', ['pending', 'in-progress', 'completed'])->default('pending');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('tasks');
+    }
+};
+```
+
+### Controllers
+
+#### TaskController (`app/Http/Controllers/TaskController.php`)
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Task;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class TaskController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $tasks = Task::where('user_id', Auth::id())->paginate(10);
+        return response()->json($tasks);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'status' => 'required|in:pending,in-progress,completed',
+        ]);
+
+        $task = Task::create([
+            'title' => $validated['title'],
+            'status' => $validated['status'],
+            'user_id' => Auth::id(),
+        ]);
+
+        return response()->json($task, 201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        return response()->json($task);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'status' => 'sometimes|required|in:pending,in-progress,completed',
+        ]);
+
+        $task->update($validated);
+
+        return response()->json($task);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        $task->delete();
+
+        return response()->json(null, 204);
+    }
+}
+```
+
+### Routes
+
+#### API Routes (`routes/api.php`)
+
+```php
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\AuthController;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+
+// Public routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+// Protected routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    
+    // Task routes
+    Route::apiResource('tasks', TaskController::class);
+});
+```
+
+### Authentication Controller
+
+#### AuthController (`app/Http/Controllers/AuthController.php`)
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
+class AuthController extends Controller
+{
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ], 201);
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        $user = $request->user();
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logged out']);
+    }
+}
+```
+
+## Usage Examples
+
+### Authentication
+
+#### Register a new user
+
+```bash
+curl -X POST http://localhost:8000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com","password":"password123","password_confirmation":"password123"}'
+```
+
+#### Login
+
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"john@example.com","password":"password123"}'
+```
+
+#### Using the authentication token
+
+```bash
+# Replace YOUR_TOKEN with the token received from login or register
+curl -X GET http://localhost:8000/api/tasks \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Accept: application/json"
+```
+
+### Task Management
+
+#### Get all tasks
+
+```bash
+curl -X GET http://localhost:8000/api/tasks \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Accept: application/json"
+```
+
+#### Create a task
+
+```bash
+curl -X POST http://localhost:8000/api/tasks \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"title":"Complete README","status":"pending"}'
+```
+
+#### Update a task
+
+```bash
+curl -X PUT http://localhost:8000/api/tasks/1 \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"status":"completed"}'
+```
+
+#### Delete a task
+
+```bash
+curl -X DELETE http://localhost:8000/api/tasks/1 \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Accept: application/json"
+```
+
+## Testing
+
+Run the tests with PHPUnit:
+
+```bash
+php artisan test
+```
+
+## Security
+
+- This API is secured with Laravel Sanctum for token-based authentication
+- Users can only access their own tasks
+- Input validation is implemented to prevent malicious data
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The Laravel Task Manager API is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
